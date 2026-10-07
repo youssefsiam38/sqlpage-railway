@@ -1,0 +1,46 @@
+# Local test topology. Mirrors the Railway service graph:
+#   db       -> PostgreSQL 16 (own volume, private): the app's data AND its pages (sqlpage_files)
+#   sqlpage  -> SQLPage behind a Caddy password front door (wrapper image), the only public service
+name: sqlpage-railway-test
+
+services:
+  db:
+    image: postgres:16.15@sha256:65b16a8b326e0cfbdf33fa7e783f2a0cb352a61448616ccccfd616ef42aa0f65
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sqlpage
+      POSTGRES_PASSWORD: localtestonlypostgrespassword
+      POSTGRES_DB: sqlpage
+      # Data in a sub-directory of the volume: the image's VOLUME is /var/lib/postgresql/data, which would
+      # otherwise shadow it with an anonymous volume locally; on Railway the volume root holds lost+found.
+      PGDATA: /var/lib/postgresql/pgdata
+    volumes:
+      - pg:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sqlpage -d sqlpage']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  sqlpage:
+    # Built from this repository. CI tests the candidate image; the Railway template uses the GHCR image.
+    build:
+      context: .
+      args:
+        WRAPPER_VERSION: ${WRAPPER_VERSION:-0.0.0-local}
+        VCS_REF: ${VCS_REF:-local}
+    image: ${SQLPAGE_RAILWAY_IMAGE:-sqlpage-railway:local}
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      PORT: '8080'
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: local-test-only-sqlpage-password
+      SITE_ACCESS: ${SITE_ACCESS:-private}
+      DATABASE_URL: postgres://sqlpage:localtestonlypostgrespassword@db:5432/sqlpage
+    ports:
+      - '127.0.0.1:${SQLPAGE_TEST_PORT:-8080}:8080'
+
+volumes:
+  pg:
