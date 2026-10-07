@@ -17,7 +17,8 @@ section "TLS and routing"
 wait_for_code "$BASE_URL/healthz" 200 180 || true
 assert_eq "health over https" "200" "$(http_code "$BASE_URL/healthz")"
 assert_eq "health body" '{"status":"ok"}' "$(curl -s --max-time 20 "$BASE_URL/healthz")"
-assert_contains "valid certificate" "SSL certificate verify ok" "$(curl -sv -o /dev/null "$BASE_URL/healthz" 2>&1 || true)"
+# curl verifies by default; a bad certificate fails the request (code 000) and sets ssl_verify_result
+assert_eq "valid certificate" "0" "$(curl -s -o /dev/null -w '%{ssl_verify_result}' --max-time 20 "$BASE_URL/healthz" || echo failed)"
 assert_contains "http -> https" "https://$host" "$(curl -s -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 20 "http://$host/healthz")"
 
 section "front door"
