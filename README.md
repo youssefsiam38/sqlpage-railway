@@ -75,3 +75,8 @@ tests/smoke.sh         # build, start, exercise front door, starter app, editor,
 tests/persistence.sh   # write data and pages, recreate containers, verify
 docker compose up -d --build   # then http://127.0.0.1:8080 (admin / local-test-only-sqlpage-password)
 ```
+
+## Template
+
+Published at https://railway.com/deploy/sqlpage (category Starters). Exact configuration:
+[RAILWAY_TEMPLATE.md](RAILWAY_TEMPLATE.md).

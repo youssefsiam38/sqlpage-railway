@@ -8,7 +8,7 @@
 | Pinned | `lovasoa/sqlpage:v0.46.3@sha256:354c683a50f541be01d427b3b664f1d5b36c28739f45bfb809be14b99b6ff649` |
 | Caddy | `caddy:2.11.7-alpine@sha256:d8542f48d34a9cf4e4c11a478865229840e87e4c96ea3f439101f31a5d35f75f` |
 | PostgreSQL | `postgres:16.15@sha256:65b16a8b326e0cfbdf33fa7e783f2a0cb352a61448616ccccfd616ef42aa0f65` |
-| Wrapper | `ghcr.io/youssefsiam38/sqlpage-railway:1.0.0` (digest recorded in `RAILWAY_TEMPLATE.md`) |
+| Wrapper | `ghcr.io/youssefsiam38/sqlpage-railway:1.0.0@sha256:a8c7bf3744495188430ce7953f7f4e32566cc28ea85c9a1ad944ba6e60c8c7a5` |
 
 ## Refreshing a digest
 
